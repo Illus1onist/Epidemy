@@ -6,18 +6,21 @@ import random
 FPS = 30
 
 RED = 0xFF0000
-BLUE = 0x0000FF
+LIGHTRED = 0xFF4C5B
+DARKBLUE = 0x0000FF
+BLUE = 0x42AAFF
 YELLOW = 0xFFC91F
 GREEN = 0x00FF00
 MAGENTA = 0xFF03B8
 CYAN = 0x00FFCC
+ORANGE = 0xFFA500
 BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
-GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+GAME_COLORS = [RED, DARKBLUE, YELLOW, GREEN, MAGENTA, CYAN, ORANGE]
 
-WIDTH = 1000
-HEIGHT = 700
+WIDTH = 1500
+HEIGHT = 750
 
 TK=2
 startproc=0.03
@@ -112,11 +115,30 @@ finished = False
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 Countries=[]
-Countries.append(country(screen,50,50,500,500,RED,'China'))
+Countries.append(country(screen,1100,350,1425,700,LIGHTRED,'China'))
+Countries.append(country(screen,900,25,1450,300, ORANGE,'Russia'))
+Countries.append(country(screen,590,50,740,350,BLUE,'Netherlands'))
+Countries.append(country(screen,80,170,450,430,DARKBLUE,'USA'))
+Countries.append(country(screen,150,520,500,730,GREEN,'Brasilia'))
 
-Countries[0].Cities.append(city(screen, 100, 100, 200, 200, 80, 7, 0.4, 0.1, 0.2,'Oohan'))
-Countries[0].Cities.append(city(screen, 300, 100, 400, 200, 80, 7, 0.4, 0.1, 0.2,'Beijin'))
-Countries[0].Cities.append(city(screen, 100, 300, 200, 400, 80, 7, 0.4, 0.1, 0.2,'Hong-Kong'))
+Countries[0].Cities.append(city(screen, 1125, 375, 1225, 475, 80, 7, 0.02, 0.1, 0.2,'Oohan'))
+Countries[0].Cities.append(city(screen, 1275, 400, 1375, 500, 80, 7, 0.02, 0.1, 0.2,'Beijin'))
+Countries[0].Cities.append(city(screen, 1200, 540, 1300, 640, 80, 7, 0.02, 0.1, 0.2,'Hong-Kong'))
+
+Countries[1].Cities.append(city(screen, 995, 175, 1095, 270, 80, 7, 0.02, 0.1, 0.2,'Moscow'))
+Countries[1].Cities.append(city(screen, 925, 50, 1025, 150, 80, 7, 0.02, 0.1, 0.2,'St. Petersburg'))
+Countries[1].Cities.append(city(screen, 1325, 190, 1425, 290, 80, 7, 0.02, 0.1, 0.2,'Vladivstok'))
+
+Countries[2].Cities.append(city(screen, 605, 200, 705, 300, 80, 7, 0.02, 0.1, 0.2,'Rotterdam'))
+Countries[2].Cities.append(city(screen, 625, 75, 725, 175, 80, 7, 0.02, 0.1, 0.2,'Amsterdam'))
+
+Countries[3].Cities.append(city(screen, 335, 195, 435, 295, 80, 7, 0.02, 0.1, 0.2,'Washington'))
+Countries[3].Cities.append(city(screen, 325, 320, 425, 420, 80, 7, 0.02, 0.1, 0.2,'New York'))
+Countries[3].Cities.append(city(screen, 110, 270, 210, 370, 80, 7, 0.02, 0.1, 0.2,'Los Anjeles'))
+
+Countries[4].Cities.append(city(screen, 385, 525, 485, 625, 80, 7, 0.02, 0.1, 0.2,'Brasilia'))
+Countries[4].Cities.append(city(screen, 270, 620, 370, 720, 80, 7, 0.02, 0.1, 0.2,'Rio de Janeiro'))
+
 
 t=0
 for k in range (len(Countries)):
@@ -138,8 +160,14 @@ while not finished:
     screen.fill(WHITE)
     for k in range(len(Countries)):
         Countries[k].draw()
+        g = pygame.font.Font(None, 36)
+        text = g.render(str(Countries[k].name), True, (180, 0, 0))
+        screen.blit(text, (Countries[k].x, Countries[k].y - 25))
         for j in range (len(Countries[k].Cities)):
             Countries[k].Cities[j].draw()
+            f = pygame.font.Font(None, 26)
+            text = f.render(str(Countries[k].Cities[j].name), True, (180, 0, 0))
+            screen.blit(text, (Countries[k].Cities[j].x, Countries[k].Cities[j].y-18))
             for i in range (len(Countries[k].Cities[j].people)):
                 if Countries[k].Cities[j].people[i].ghoust==0:
                     Countries[k].Cities[j].people[i].move()
@@ -173,11 +201,15 @@ while not finished:
     for i in range(len(Countries)):
         for j in range(len(Countries[i].Cities)):
             for k in range(len(Countries[i].Cities[j].people)):
+                if Countries[i].Cities[j].people[k].live == 1 and t % (int(FPS) / TK) == 0:
+                    if random.uniform(0,1)<Countries[i].Cities[j].Dpropability:
+                        Countries[i].Cities[j].people[k].live = -1
                 if Countries[i].Cities[j].people[k].timer==-1 and Countries[i].Cities[j].people[k].live==1 and t%(int(FPS)/TK)==0:
                     if random.uniform(0,1)<Countries[i].Cities[j].Dpropability:
                         Countries[i].Cities[j].people[k].live = -1
                     else:
                         Countries[i].Cities[j].people[k].live = 0
+
 
     #if t%(int(FPS/TK))==0:
     #   print(Countries[0].Cities[2].people[7].timer) - строчки для проверок в коде
