@@ -22,6 +22,8 @@ GAME_COLORS = [RED, DARKBLUE, YELLOW, GREEN, MAGENTA, CYAN, ORANGE]
 WIDTH = 1500
 HEIGHT = 750
 
+
+
 TK=2
 startproc=0.03
 
@@ -38,43 +40,55 @@ class country:
         self.Cities=[]
     def draw(self):
         pygame.draw.rect(self.screen,self.color,(self.x,self.y,self.xo-self.x,self.yo-self.y))
+
+widthramki=350
+heightramki=350
+coordxramki=1125
+coordyramki=25
+
+buttonwidth=50
+buttonheight=50
 class city:
-    def __init__(self, screen: pygame.Surface, x, y,xo,yo,N,Repid,Dpropability,propability,active,Name):
-        self.screen=screen
-        self.x=x
-        self.y=y
-        self.xo=xo
-        self.yo=yo
-        self.N=N
-        self.Repid=Repid
-        self.Dpropability=Dpropability
-        self.propability=propability
-        self.active=active
-        self.name=Name
-        self.people=[]
+    def __init__(self, screen: pygame.Surface, x, y,xo,yo,N,Repid,Dpropability,propability,active,Name,showstatus,buttonx,buttony):
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.xo = xo
+        self.yo = yo
+        self.N = N
+        self.Repid = Repid
+        self.Dpropability = Dpropability
+        self.propability = propability
+        self.active = active
+        self.name = Name
+        self.showstatus = showstatus
+        self.people = []
+        self.Buttonx = buttonx
+        self.Buttony = buttony
     def draw(self):
-        pygame.draw.rect(self.screen,WHITE,(self.x,self.y,self.xo-self.x,self.yo-self.y))
+        pygame.draw.rect(self.screen,WHITE,(coordxramki,coordyramki,self.xo-self.x,self.yo-self.y))
+
 
 
 class man:
-    def __init__(self, screen: pygame.Surface,ghoust, x, y,live , R,city):
+    def __init__(self, screen: pygame.Surface, ghoust, x, y, live , R, city):
         self.screen = screen
         self.x = x
         self.y = y
         self.r = Rusual
-        self.rep=R
+        self.rep = R
         self.v = random.randint(5,10)*0.3
         self.van = random.uniform(0,2*math.pi)
         self.color = BLUE
         self.live = live
-        self.city=city
-        self.ghoust=ghoust
-        self.waytime=0
-        self.aimcity=city
-        if self.live==2:
-            self.timer=-2
-        if self.live==1:
-            self.timer=14
+        self.city = city
+        self.ghoust = ghoust
+        self.waytime = 0
+        self.aimcity = city
+        if self.live == 2:
+            self.timer = -2
+        if self.live == 1:
+            self.timer = 14
 
     def move(self):
         self.van=self.van+random.uniform(-math.pi*0.1,math.pi*0.1)
@@ -107,7 +121,8 @@ class man:
 
     def draw(self):
 
-        pygame.draw.circle(self.screen,self.color,(self.x,self.y),self.r)
+        pygame.draw.circle(self.screen,self.color,(self.x+(coordxramki-self.city.x),self.y+(coordyramki-self.city.y)),self.r)
+
 
 def start_game():
     finished = False
@@ -120,23 +135,23 @@ def start_game():
     Countries.append(country(screen,80,170,450,430,DARKBLUE,'USA'))
     Countries.append(country(screen,150,520,500,730,GREEN,'Brasilia'))
 
-    Countries[0].Cities.append(city(screen, 1125, 375, 1225, 475, 80, 7, 0.02, 0.1, 0.2,'Oohan'))
-    Countries[0].Cities.append(city(screen, 1275, 400, 1375, 500, 80, 7, 0.02, 0.1, 0.2,'Beijin'))
-    Countries[0].Cities.append(city(screen, 1200, 540, 1300, 640, 80, 7, 0.02, 0.1, 0.2,'Hong-Kong'))
+    Countries[0].Cities.append(city(screen, -2000, 0, -2000+widthramki, heightramki, 80, 7, 0.02, 0.1, 0.2,'Oohan',1,0,0))
+    Countries[0].Cities.append(city(screen, -1600, 0, -1600+widthramki, heightramki, 80, 7, 0.02, 0.1, 0.2,'Beijin',0,0,50))
+    Countries[0].Cities.append(city(screen, -1200, 0, -1200+widthramki, heightramki, 80, 7, 0.02, 0.1, 0.2,'Hong-Kong',0,0,100))
 
-    Countries[1].Cities.append(city(screen, 995, 175, 1095, 270, 80, 7, 0.02, 0.1, 0.2,'Moscow'))
-    Countries[1].Cities.append(city(screen, 925, 50, 1025, 150, 80, 7, 0.02, 0.1, 0.2,'St. Petersburg'))
-    Countries[1].Cities.append(city(screen, 1325, 190, 1425, 290, 80, 7, 0.02, 0.1, 0.2,'Vladivstok'))
+    Countries[1].Cities.append(city(screen, -2000, 400, -2000+widthramki, 400+heightramki, 80, 7, 0.02, 0.1, 0.2,'Moscow',0,0,0))
+    Countries[1].Cities.append(city(screen, -1600, 400, -1600+widthramki, 400+heightramki, 80, 7, 0.02, 0.1, 0.2,'St. Petersburg',0,0,0))
+    Countries[1].Cities.append(city(screen, -1200, 400, -1200+widthramki, 400+heightramki, 80, 7, 0.02, 0.1, 0.2,'Vladivstok',0,0,0))
 
-    Countries[2].Cities.append(city(screen, 605, 200, 705, 300, 80, 7, 0.02, 0.1, 0.2,'Rotterdam'))
-    Countries[2].Cities.append(city(screen, 625, 75, 725, 175, 80, 7, 0.02, 0.1, 0.2,'Amsterdam'))
+    Countries[2].Cities.append(city(screen, -2000, 800, -2000+widthramki, 800+heightramki, 80, 7, 0.02, 0.1, 0.2,'Rotterdam',0,0,0))
+    Countries[2].Cities.append(city(screen, -1600, 800, -1600+widthramki, 800+heightramki, 80, 7, 0.02, 0.1, 0.2,'Amsterdam',0,0,0))
 
-    Countries[3].Cities.append(city(screen, 335, 195, 435, 295, 80, 7, 0.02, 0.1, 0.2,'Washington'))
-    Countries[3].Cities.append(city(screen, 325, 320, 425, 420, 80, 7, 0.02, 0.1, 0.2,'New York'))
-    Countries[3].Cities.append(city(screen, 110, 270, 210, 370, 80, 7, 0.02, 0.1, 0.2,'Los Anjeles'))
+    Countries[3].Cities.append(city(screen, -2000, 1200, -2000+widthramki, 1200+heightramki, 80, 7, 0.02, 0.1, 0.2,'Washington',0,0,0))
+    Countries[3].Cities.append(city(screen, -1600, 1200, -1600+widthramki, 1200+heightramki, 80, 7, 0.02, 0.1, 0.2,'New York',0,0,0))
+    Countries[3].Cities.append(city(screen, -1200, 1200, -1200+widthramki, 1200+heightramki, 80, 7, 0.02, 0.1, 0.2,'Los Anjeles',0,0,0))
 
-    Countries[4].Cities.append(city(screen, 385, 525, 485, 625, 80, 7, 0.02, 0.1, 0.2,'Brasilia'))
-    Countries[4].Cities.append(city(screen, 270, 620, 370, 720, 80, 7, 0.02, 0.1, 0.2,'Rio de Janeiro'))
+    Countries[4].Cities.append(city(screen, -2000, 1600, -2000+widthramki, 1600+heightramki, 80, 7, 0.02, 0.1, 0.2,'Brasilia',0,0,0))
+    Countries[4].Cities.append(city(screen, -1600, 1600, -1600+widthramki, 1600+heightramki, 80, 7, 0.02, 0.1, 0.2,'Rio de Janeiro',0,0,0))
 
 
     t=0
@@ -183,6 +198,7 @@ def start_game():
             pygame.display.update()
 
     virus_b = Button(150, 70)
+
     while not finished:
         t=t+1
         screen.fill(WHITE)
@@ -190,22 +206,26 @@ def start_game():
         screen.blit(map, (0, 0))
         virus_b.draw(750, 650, 'Virus', virus, 50)
         for k in range(len(Countries)):
-            Countries[k].draw()
-            g = pygame.font.Font(None, 36)
-            text = g.render(str(Countries[k].name), True, (180, 0, 0))
-            screen.blit(text, (Countries[k].x, Countries[k].y - 25))
             for j in range (len(Countries[k].Cities)):
-                Countries[k].Cities[j].draw()
-                f = pygame.font.Font(None, 26)
-                text = f.render(str(Countries[k].Cities[j].name), True, (180, 0, 0))
-                screen.blit(text, (Countries[k].Cities[j].x, Countries[k].Cities[j].y-18))
+                if Countries[k].Cities[j].showstatus==1:
+                    f = pygame.font.Font(None, 60)
+                    text = f.render(str(Countries[k].Cities[j].name), True, (180, 0, 0))
+                    screen.blit(text, (1300-15*len(Countries[k].Cities[j].name), 385))
+
+                    g = pygame.font.Font(None, 40)
+                    text = g.render(str(Countries[k].name), True, (180, 0, 0))
+                    screen.blit(text, (1300-10*len(Countries[k].name),425))
+
                 for i in range (len(Countries[k].Cities[j].people)):
                     if Countries[k].Cities[j].people[i].ghoust==0:
                         Countries[k].Cities[j].people[i].move()
                     '''if underMan[i].ghoust==1:
                         underMan[i].touristmoving(self)'''
-                    Countries[k].Cities[j].people[i].draw()
+                    if Countries[k].Cities[j].showstatus == 1:
+                        Countries[k].Cities[j].people[i].draw()
 
+        ramka = pygame.image.load('Ramka.png').convert_alpha()
+        screen.blit(ramka, (1110, 10))
         for i in range(len(Countries)):
             for j in range(len(Countries[i].Cities)):
                 for k in range(len(Countries[i].Cities[j].people)):
@@ -263,13 +283,28 @@ def start_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 finished = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # левая кнопка мыши
+                    print(event.pos[0],event.pos[1])
+                    for i in range(len(Countries)):
+                        help=0
+                        for j in range(len(Countries[i].Cities)):
+                            if event.pos[0]>Countries[i].Cities[j].Buttonx and event.pos[0]<Countries[i].Cities[j].Buttonx+buttonwidth and event.pos[1]>Countries[i].Cities[j].Buttony and event.pos[1]<Countries[i].Cities[j].Buttony+buttonheight:
+                                for a in range(len(Countries)):
+                                    for b in range(len(Countries[a].Cities)):
+                                        Countries[a].Cities[b].showstatus = 0
+                                Countries[i].Cities[j].showstatus = 1
+                                print(i,j)
+                                help=1
+                                break
+                        if help==1:
+                            break
 
         clock.tick(FPS)
 
-Wh = 1500
-Ht = 750
 
-screen = pygame.display.set_mode([Wh, Ht])
+
+screen = pygame.display.set_mode([WIDTH, HEIGHT])
 def print_text (message, x, y, font_color=(0, 0, 0), font_type='PingPong.otf', font_size=30):
     font_type = pygame.font.Font(font_type, font_size)
     text = font_type.render(message, True, font_color)
