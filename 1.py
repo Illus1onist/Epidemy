@@ -109,7 +109,7 @@ class man:
 
         pygame.draw.circle(self.screen,self.color,(self.x,self.y),self.r)
 
-def primeri_stran():
+def start_game():
     finished = False
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
@@ -149,14 +149,47 @@ def primeri_stran():
                     live=2
                 Countries[k].Cities[j].people.append(man(screen,0,random.uniform(Countries[k].Cities[j].x,Countries[k].Cities[j].xo),random.uniform(Countries[k].Cities[j].y,Countries[k].Cities[j].yo),live,35,Countries[k].Cities[j]))
 
+    def virus():
+        menu_bg = pygame.image.load('virus.png')
+        virus = True
+        one_b = Button(300, 70)
+        two_b = Button(300, 70)
+        three_b = Button(300, 70)
+        four_b = Button(300, 70)
+        five_b = Button(300, 70)
+        six_b = Button(300, 70)
+        seven_b = Button(300, 70)
+        eight_b = Button(300, 70)
+        nine_b = Button(300, 70)
+        back_b = Button(300, 70)
+        while virus:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+            screen.blit(menu_bg, (0, 0))
+            one_b.draw(30, 300, 'Continue game', None, 50)
+            two_b.draw(350, 450, 'Continue game', None, 50)
+            three_b.draw(350, 150, 'Continue game', None, 50)
+            four_b.draw(700, 100, 'Continue game', None, 50)
+            five_b.draw(700, 200, 'Continue game', None, 50)
+            six_b.draw(700, 400, 'Continue game', None, 50)
+            seven_b.draw(700, 500, 'Continue game', None, 50)
+            eight_b.draw(1200, 250, 'Continue game', None, 50)
+            nine_b.draw(1200, 650, 'Continue game', None, 50)
+            back_b.draw(30, 650, 'Back', start_game, 50)
 
 
+            pygame.display.update()
 
+    virus_b = Button(150, 70)
     while not finished:
-
-
         t=t+1
         screen.fill(WHITE)
+        map = pygame.image.load('map.png')
+        screen.blit(map, (0, 0))
+        virus_b.draw(750, 650, 'Virus', virus, 50)
         for k in range(len(Countries)):
             Countries[k].draw()
             g = pygame.font.Font(None, 36)
@@ -291,8 +324,8 @@ def show_menu():
                     quit()
 
             screen.blit(menu_bg, (0, 0))
-            primeri_b.draw(400, 200, 'Examples', primeri_stran, 50)
-            creator_b.draw(300, 300, 'Create virus', None, 50)
+            primeri_b.draw(400, 200, 'New game', start_game, 50)
+            creator_b.draw(300, 300, 'Continue game', None, 50)
 
             pygame.display.update()
 
