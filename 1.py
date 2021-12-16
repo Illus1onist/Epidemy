@@ -304,8 +304,6 @@ class Button:
 
 def show_menu():
     menu_bg = pygame.image.load('virus.png')
-    pygame.mixer.music.load('synthwave.mp3')
-    pygame.mixer.music.play()
     show = True
     start_b = Button(300, 70)
     quit_b = Button(300, 70)
