@@ -180,7 +180,6 @@ def start_game():
             nine_b.draw(1200, 650, 'Continue game', None, 50)
             back_b.draw(30, 650, 'Back', start_game, 50)
 
-
             pygame.display.update()
 
     virus_b = Button(150, 70)
@@ -206,9 +205,6 @@ def start_game():
                     '''if underMan[i].ghoust==1:
                         underMan[i].touristmoving(self)'''
                     Countries[k].Cities[j].people[i].draw()
-
-
-
 
         for i in range(len(Countries)):
             for j in range(len(Countries[i].Cities)):
@@ -308,6 +304,8 @@ class Button:
 
 def show_menu():
     menu_bg = pygame.image.load('virus.png')
+    pygame.mixer.music.load('synthwave.mp3')
+    pygame.mixer.music.play()
     show = True
     start_b = Button(300, 70)
     quit_b = Button(300, 70)
