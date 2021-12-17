@@ -56,47 +56,73 @@ buttonheight=50
 class city:
     def __init__(self, screen: pygame.Surface, x, y,xo,yo,N,Repid,Dpropability,propability,active,Name,showstatus,buttonx,buttony):
         self.screen = screen
+        #coordinates of left-top and right-bottom angles of city
         self.x = x
         self.y = y
         self.xo = xo
         self.yo = yo
+        #number of people
         self.N = N
+        #radius, in which the epidemy distributes
         self.Repid = Repid
+        #propability to die every day
         self.Dpropability = Dpropability
+        #propability of distribution of epidemy (in the radius)
         self.propability = propability
+        #activity of people, their velocity
         self.active = active
+        #name of city
         self.name = Name
+        #status of visualisation on the right part of screen
         self.showstatus = showstatus
+        #massive of people who were born in the city
         self.people = []
+        #coordinates of button (on the map)
         self.Buttonx = buttonx
         self.Buttony = buttony
     def draw(self):
+        #function of drawing on the right part
         pygame.draw.rect(self.screen,WHITE,(coordxramki,coordyramki,self.xo-self.x,self.yo-self.y))
 
 
 
 class man:
-    def __init__(self, screen: pygame.Surface, ghoust, x, y, live , R, city):
+    def __init__(self, screen: pygame.Surface, ghoust, x, y, live , city):
         self.screen = screen
+        #coordinates of people and their radius
         self.x = x
         self.y = y
         self.r = Rusual
-        self.rep = R
+        #destination object (if tourist)
         self.destination=city
-
+        #velocity of particle and its angle
         self.v = random.randint(5,10)*0.3
         self.van = random.uniform(0,2*math.pi)
+        #color
         self.color = BLUE
+        #live index:
+        #1 - ill
+        #2 - healthy and haven't been ill. Can become ill if the ill person is near
+        #0 - healthy and have been ill. Can-t become ill again
+        #-1 - dead
         self.live = live
+        #city of birth (object)
         self.city = city
+        #ghost parametr
         self.ghoust = ghoust
+        #time during flight/ride
         self.waytime = 0
+        #aim of journey
         self.aimcity = city
+
+        #timer of illness. For healthy people no timer. For ill - time before becoming healthy
         if self.live == 2:
             self.timer = -2
         if self.live == 1:
             self.timer = 14
 
+
+    #function of moving
     def move(self):
         self.van=self.van+random.uniform(-math.pi*0.1,math.pi*0.1)
         self.x = self.x + math.cos(self.van) * self.v * self.city.active
@@ -113,19 +139,6 @@ class man:
         if self.y<self.city.y+self.r:
             self.y=self.r+self.city.y
             self.van=(random.uniform(-math.pi,0))
-    '''def tourist(self,city1,city2):
-        self.ghoust=1
-        self.aimcity=city2
-        touristmoving(self,city1,city2)
-    def Cametothecity(self,city):
-        self.city = city
-        self.aimcity= city
-        self.ghoust=0
-    def touristmoving(self,city1,city2,i):
-        self.x=(city2.x-city1.x)*i/20+city1.x
-        self.x = (city2.y - city1.y)*i/20+city1.y
-        self.waytime=self.waytime+1'''
-
     def draw(self):
 
         pygame.draw.circle(self.screen,self.color,(self.x+(coordxramki-self.city.x),self.y+(coordyramki-self.city.y)),self.r)
@@ -135,13 +148,14 @@ def start_game():
     finished = False
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
+    #creating countries
     Countries=[]
     Countries.append(country(screen,1100,350,1425,700,LIGHTRED,'China'))
     Countries.append(country(screen,900,25,1450,300, ORANGE,'Russia'))
     Countries.append(country(screen,590,50,740,350,BLUE,'Netherlands'))
     Countries.append(country(screen,80,170,450,430,DARKBLUE,'USA'))
     Countries.append(country(screen,150,520,500,730,GREEN,'Brasilia'))
-
+    #creating cities and their buttons on the map
     Countries[0].Cities.append(city(screen, -2000, 0, -2000+widthramki, heightramki, 150, 21, 0.015, 0.17, 0.3,'Oohan',1,785,159))
     Countries[0].Cities.append(city(screen, -1600, 0, -1600+widthramki, heightramki, 150, 21, 0.015, 0.17, 0.2,'Beijin',0,843,134))
     Countries[0].Cities.append(city(screen, -1200, 0, -1200+widthramki, heightramki, 150, 21, 0.015, 0.17, 0.2,'Hong-Kong',0,898,185))
@@ -160,8 +174,10 @@ def start_game():
     Countries[4].Cities.append(city(screen, -2000, 1600, -2000+widthramki, 1600+heightramki, 150, 21, 0.02, 0.17, 0.2,'Brasilia',0,344,311))
     Countries[4].Cities.append(city(screen, -1600, 1600, -1600+widthramki, 1600+heightramki, 150, 21, 0.02, 0.17, 0.2,'Rio de Janeiro',0,289,346))
 
-
+    #timer which will work "all day long"
     t=0
+
+    #appending people in the city's massives
     for k in range (len(Countries)):
         for j in range (len(Countries[k].Cities)):
             for i in range (Countries[k].Cities[j].N):
@@ -169,22 +185,24 @@ def start_game():
                     live=1
                 else:
                     live=2
-                Countries[k].Cities[j].people.append(man(screen,0,random.uniform(Countries[k].Cities[j].x,Countries[k].Cities[j].xo),random.uniform(Countries[k].Cities[j].y,Countries[k].Cities[j].yo),live,35,Countries[k].Cities[j]))
+                Countries[k].Cities[j].people.append(man(screen,0,random.uniform(Countries[k].Cities[j].x,Countries[k].Cities[j].xo),random.uniform(Countries[k].Cities[j].y,Countries[k].Cities[j].yo),live,Countries[k].Cities[j]))
 
     letal_b = Button_game(170, 80, 1)
     zaraz_b = Button_game(170, 80, 2)    # кнопки улучшения вируса
     imun_b = Button_game(170, 80, 3)              
 
+    #start of cycling
     while not finished:
         t=t+1
         screen.fill(WHITE)
+        #drawing nearly all things we need on screen
         map = pygame.image.load('map.png')
         screen.blit(map, (0, 0))
         
         letal_b.draw(300, 650, 'Lethality+1', str(cost), None, 30)
         zaraz_b.draw(750, 650, 'Infection+1', str(cost),  None, 30)   # тоже кнопки
         imun_b.draw(1200, 650, 'Immune+1', str(cost),  None, 30)
-        
+        #moving All men and drowing Chosen ones and text for country in the viewport on the right
         for k in range(len(Countries)):
             for j in range (len(Countries[k].Cities)):
                 if Countries[k].Cities[j].showstatus==1:
@@ -201,10 +219,13 @@ def start_game():
                         Countries[k].Cities[j].people[i].move()
                     if Countries[k].Cities[j].showstatus == 1:
                         Countries[k].Cities[j].people[i].draw()
-
+        #drawing ramka above and metki
         ramka = pygame.image.load('Ramka.png').convert_alpha()
         screen.blit(ramka, (1110, 10))
         mapflag = pygame.image.load('metka.png').convert_alpha()
+
+
+        #moment of giving ilness from one to another
         for i in range(len(Countries)):
             for j in range(len(Countries[i].Cities)):
                 screen.blit(mapflag, (Countries[i].Cities[j].Buttonx,Countries[i].Cities[j].Buttony))
@@ -215,9 +236,7 @@ def start_game():
                                 Countries[i].Cities[j].people[k].live = 1
                                 Countries[i].Cities[j].people[k].timer = 14
 
-
-
-
+        # making smaller timer of illneses on people
         for i in range(len(Countries)):
             for j in range(len(Countries[i].Cities)):
                 for k in range(len(Countries[i].Cities[j].people)):
@@ -225,7 +244,7 @@ def start_game():
                         Countries[i].Cities[j].people[k].timer=Countries[i].Cities[j].people[k].timer-1
 
 
-
+        #death or becoming healthy
         for i in range(len(Countries)):
             for j in range(len(Countries[i].Cities)):
                 for k in range(len(Countries[i].Cities[j].people)):
@@ -239,14 +258,8 @@ def start_game():
                             Countries[i].Cities[j].people[k].live = 0
 
 
-        #if t%(int(FPS/TK))==0:
-        #   print(Countries[0].Cities[2].people[7].timer) - строчки для проверок в коде
 
-
-        '''for i in range(len(underMan)):
-            if underMan[i].ghoust==0 and random.uniform(0,1)<0.02:
-                tourist(underMan[i],underMan[i].city,City[2])'''
-
+        #methods of colouring things
         for i in range(len(Countries)):
             for j in range(len(Countries[i].Cities)):
                 for k in range(len(Countries[i].Cities[j].people)):
@@ -259,7 +272,7 @@ def start_game():
 
         pygame.display.update()
 
-
+        #operator for buttons
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 finished = True
