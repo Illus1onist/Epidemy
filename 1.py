@@ -28,10 +28,11 @@ HEIGHT = 750
 
 
 
-TK=2
+TK=1.2
+frequencyofvirus=1.6
 startproc=0.03
 
-Rusual=4
+Rusual=5
 class country:
     def __init__(self,screen:pygame.Surface, x, y,xo,yo,color,Name):
         self.screen = screen
@@ -81,6 +82,8 @@ class man:
         self.y = y
         self.r = Rusual
         self.rep = R
+        self.destination=city
+
         self.v = random.randint(5,10)*0.3
         self.van = random.uniform(0,2*math.pi)
         self.color = BLUE
@@ -139,30 +142,30 @@ def start_game():
     Countries.append(country(screen,80,170,450,430,DARKBLUE,'USA'))
     Countries.append(country(screen,150,520,500,730,GREEN,'Brasilia'))
 
-    Countries[0].Cities.append(city(screen, -2000, 0, -2000+widthramki, heightramki, 80, 7, 0.02, 0.1, 0.2,'Oohan',1,0,0))
-    Countries[0].Cities.append(city(screen, -1600, 0, -1600+widthramki, heightramki, 80, 7, 0.02, 0.1, 0.2,'Beijin',0,0,50))
-    Countries[0].Cities.append(city(screen, -1200, 0, -1200+widthramki, heightramki, 80, 7, 0.02, 0.1, 0.2,'Hong-Kong',0,0,100))
+    Countries[0].Cities.append(city(screen, -2000, 0, -2000+widthramki, heightramki, 150, 21, 0.015, 0.17, 0.3,'Oohan',1,785,159))
+    Countries[0].Cities.append(city(screen, -1600, 0, -1600+widthramki, heightramki, 150, 21, 0.015, 0.17, 0.2,'Beijin',0,843,134))
+    Countries[0].Cities.append(city(screen, -1200, 0, -1200+widthramki, heightramki, 150, 21, 0.015, 0.17, 0.2,'Hong-Kong',0,898,185))
 
-    Countries[1].Cities.append(city(screen, -2000, 400, -2000+widthramki, 400+heightramki, 80, 7, 0.02, 0.1, 0.2,'Moscow',0,0,0))
-    Countries[1].Cities.append(city(screen, -1600, 400, -1600+widthramki, 400+heightramki, 80, 7, 0.02, 0.1, 0.2,'St. Petersburg',0,0,0))
-    Countries[1].Cities.append(city(screen, -1200, 400, -1200+widthramki, 400+heightramki, 80, 7, 0.02, 0.1, 0.2,'Vladivstok',0,0,0))
+    Countries[1].Cities.append(city(screen, -2000, 400, -2000+widthramki, 400+heightramki, 150, 21, 0.02, 0.17, 0.2,'Moscow',0,621,79))
+    Countries[1].Cities.append(city(screen, -1600, 400, -1600+widthramki, 400+heightramki, 150, 21, 0.02, 0.17, 0.2,'Chelyabinsk',0,748,72))
+    Countries[1].Cities.append(city(screen, -1200, 400, -1200+widthramki, 400+heightramki, 150, 21, 0.02, 0.17, 0.2,'Vladivstok',0,933,98))
 
-    Countries[2].Cities.append(city(screen, -2000, 800, -2000+widthramki, 800+heightramki, 80, 7, 0.02, 0.1, 0.2,'Rotterdam',0,0,0))
-    Countries[2].Cities.append(city(screen, -1600, 800, -1600+widthramki, 800+heightramki, 80, 7, 0.02, 0.1, 0.2,'Amsterdam',0,0,0))
+    Countries[2].Cities.append(city(screen, -2000, 800, -2000+widthramki, 800+heightramki, 150, 21, 0.02, 0.17, 0.2,'Rotterdam',0,528,90))
+    Countries[2].Cities.append(city(screen, -1600, 800, -1600+widthramki, 800+heightramki, 150, 21, 0.02, 0.17, 0.2,'Amsterdam',0,484,123))
 
-    Countries[3].Cities.append(city(screen, -2000, 1200, -2000+widthramki, 1200+heightramki, 80, 7, 0.02, 0.1, 0.2,'Washington',0,0,0))
-    Countries[3].Cities.append(city(screen, -1600, 1200, -1600+widthramki, 1200+heightramki, 80, 7, 0.02, 0.1, 0.2,'New York',0,0,0))
-    Countries[3].Cities.append(city(screen, -1200, 1200, -1200+widthramki, 1200+heightramki, 80, 7, 0.02, 0.1, 0.2,'Los Anjeles',0,0,0))
+    Countries[3].Cities.append(city(screen, -2000, 1200, -2000+widthramki, 1200+heightramki, 150, 21, 0.02, 0.17, 0.2,'Washington',0,224,132))
+    Countries[3].Cities.append(city(screen, -1600, 1200, -1600+widthramki, 1200+heightramki, 150, 21, 0.02, 0.17, 0.2,'New York',0,167,159))
+    Countries[3].Cities.append(city(screen, -1200, 1200, -1200+widthramki, 1200+heightramki, 150, 21, 0.02, 0.17, 0.2,'Los Anjeles',0,81,149))
 
-    Countries[4].Cities.append(city(screen, -2000, 1600, -2000+widthramki, 1600+heightramki, 80, 7, 0.02, 0.1, 0.2,'Brasilia',0,0,0))
-    Countries[4].Cities.append(city(screen, -1600, 1600, -1600+widthramki, 1600+heightramki, 80, 7, 0.02, 0.1, 0.2,'Rio de Janeiro',0,0,0))
+    Countries[4].Cities.append(city(screen, -2000, 1600, -2000+widthramki, 1600+heightramki, 150, 21, 0.02, 0.17, 0.2,'Brasilia',0,344,311))
+    Countries[4].Cities.append(city(screen, -1600, 1600, -1600+widthramki, 1600+heightramki, 150, 21, 0.02, 0.17, 0.2,'Rio de Janeiro',0,289,346))
 
 
     t=0
     for k in range (len(Countries)):
         for j in range (len(Countries[k].Cities)):
             for i in range (Countries[k].Cities[j].N):
-                if random.uniform(0,1)<=startproc:
+                if k==0 and j==0 and i==0:
                     live=1
                 else:
                     live=2
@@ -187,28 +190,28 @@ def start_game():
                 if Countries[k].Cities[j].showstatus==1:
                     f = pygame.font.Font(None, 60)
                     text = f.render(str(Countries[k].Cities[j].name), True, (180, 0, 0))
-                    screen.blit(text, (1300-15*len(Countries[k].Cities[j].name), 385))
+                    screen.blit(text, (1300-12*len(Countries[k].Cities[j].name), 385))
 
                     g = pygame.font.Font(None, 40)
                     text = g.render(str(Countries[k].name), True, (180, 0, 0))
-                    screen.blit(text, (1300-10*len(Countries[k].name),425))
+                    screen.blit(text, (1300-8*len(Countries[k].name),425))
 
                 for i in range (len(Countries[k].Cities[j].people)):
-                    if Countries[k].Cities[j].people[i].ghoust==0:
+                    if Countries[k].Cities[j].people[i].ghoust==0 and Countries[k].Cities[j].people[i].live!=-1:
                         Countries[k].Cities[j].people[i].move()
-                    '''if underMan[i].ghoust==1:
-                        underMan[i].touristmoving(self)'''
                     if Countries[k].Cities[j].showstatus == 1:
                         Countries[k].Cities[j].people[i].draw()
 
         ramka = pygame.image.load('Ramka.png').convert_alpha()
         screen.blit(ramka, (1110, 10))
+        mapflag = pygame.image.load('metka.png').convert_alpha()
         for i in range(len(Countries)):
             for j in range(len(Countries[i].Cities)):
+                screen.blit(mapflag, (Countries[i].Cities[j].Buttonx,Countries[i].Cities[j].Buttony))
                 for k in range(len(Countries[i].Cities[j].people)):
                     if Countries[i].Cities[j].people[k].live == 2:
                         for l in range(len(Countries[i].Cities[j].people)):
-                            if Countries[i].Cities[j].people[l].live == 1 and (Countries[i].Cities[j].people[l].x - Countries[i].Cities[j].people[k].x) ** 2 + (Countries[i].Cities[j].people[l].y - Countries[i].Cities[j].people[k].y) ** 2 <= Countries[i].Cities[j].Repid**2 and t % (int(FPS / TK)) == 0 and random.uniform(0, 1) < Countries[i].Cities[j].propability:
+                            if Countries[i].Cities[j].people[l].ghoust == 0 and Countries[i].Cities[j].people[l].live == 1 and (Countries[i].Cities[j].people[l].x - Countries[i].Cities[j].people[k].x) ** 2 + (Countries[i].Cities[j].people[l].y - Countries[i].Cities[j].people[k].y) ** 2 <= Countries[i].Cities[j].Repid**2 and t % (int(FPS / TK / frequencyofvirus)) == 0 and random.uniform(0, 1) < Countries[i].Cities[j].propability:
                                 Countries[i].Cities[j].people[k].live = 1
                                 Countries[i].Cities[j].people[k].timer = 14
 
