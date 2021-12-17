@@ -5,6 +5,10 @@ import random
 
 FPS = 30
 
+cost = 100  # стоймость прокачки aka очки/счет
+
+letal = zaraz = imun = 1  # параметры вируса - все это надо интегрировать в код
+
 RED = 0xFF0000
 LIGHTRED = 0xFF4C5B
 DARKBLUE = 0x0000FF
@@ -164,47 +168,20 @@ def start_game():
                     live=2
                 Countries[k].Cities[j].people.append(man(screen,0,random.uniform(Countries[k].Cities[j].x,Countries[k].Cities[j].xo),random.uniform(Countries[k].Cities[j].y,Countries[k].Cities[j].yo),live,35,Countries[k].Cities[j]))
 
-    def virus():
-        menu_bg = pygame.image.load('virus.png')
-        virus = True
-        one_b = Button(300, 70)
-        two_b = Button(300, 70)
-        three_b = Button(300, 70)
-        four_b = Button(300, 70)
-        five_b = Button(300, 70)
-        six_b = Button(300, 70)
-        seven_b = Button(300, 70)
-        eight_b = Button(300, 70)
-        nine_b = Button(300, 70)
-        back_b = Button(300, 70)
-        while virus:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-
-            screen.blit(menu_bg, (0, 0))
-            one_b.draw(30, 300, 'Continue game', None, 50)
-            two_b.draw(350, 450, 'Continue game', None, 50)
-            three_b.draw(350, 150, 'Continue game', None, 50)
-            four_b.draw(700, 100, 'Continue game', None, 50)
-            five_b.draw(700, 200, 'Continue game', None, 50)
-            six_b.draw(700, 400, 'Continue game', None, 50)
-            seven_b.draw(700, 500, 'Continue game', None, 50)
-            eight_b.draw(1200, 250, 'Continue game', None, 50)
-            nine_b.draw(1200, 650, 'Continue game', None, 50)
-            back_b.draw(30, 650, 'Back', start_game, 50)
-
-            pygame.display.update()
-
-    virus_b = Button(150, 70)
+    letal_b = Button_game(170, 80, 1)
+    zaraz_b = Button_game(170, 80, 2)    # кнопки улучшения вируса
+    imun_b = Button_game(170, 80, 3)              
 
     while not finished:
         t=t+1
         screen.fill(WHITE)
         map = pygame.image.load('map.png')
         screen.blit(map, (0, 0))
-        virus_b.draw(750, 650, 'Virus', virus, 50)
+        
+        letal_b.draw(300, 650, 'Lethality+1', str(cost), None, 30)
+        zaraz_b.draw(750, 650, 'Infection+1', str(cost),  None, 30)   # тоже кнопки
+        imun_b.draw(1200, 650, 'Immune+1', str(cost),  None, 30)
+        
         for k in range(len(Countries)):
             for j in range (len(Countries[k].Cities)):
                 if Countries[k].Cities[j].showstatus==1:
@@ -311,7 +288,7 @@ def print_text (message, x, y, font_color=(0, 0, 0), font_type='PingPong.otf', f
     screen.blit(text, (x, y))
 
 
-class Button:
+class Button_menu:
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -336,18 +313,55 @@ class Button:
 
         print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)
 
+class Button_game:
+    def __init__(self, width, height, type):
+        self.width = width
+        self.height = height
+        self.type = type
+        self.inactive_color = (205, 41, 144)
+        self.active_color = (255, 52, 179)
+
+    def draw(self, x, y, message1, message2, action=None, font_size=50):
+        global cost, letal, zaraz, imun
+        type = self.type
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        if x < mouse[0] < x + self.width and y < mouse[1] < y + self.height:
+                pygame.draw.rect(screen, self.active_color, (x, y, self.width, self.height))
+
+                if click[0] == 1:
+                    if type == 1:
+                        letal += 1  # нужно настроить
+                    if type == 2:
+                        zaraz += 1  # тоже
+                    if type == 3:
+                        imun += 1  # тоже
+
+                    cost += 100
+                    button_sound = pygame.mixer.Sound('button2.wav')
+                    pygame.mixer.Sound.play(button_sound)
+                    pygame.time.delay(300)
+                    if action is not None:
+                        action()
+        else:
+            pygame.draw.rect(screen, self.inactive_color, (x, y, self.width, self.height))
+
+        print_text(message1, x=x + 10, y=y + 10, font_size=font_size)
+        print_text(message2, x=x + (self.width / 2), y=y + 50, font_size=font_size)
+
 
 def show_menu():
     menu_bg = pygame.image.load('virus.png')
     show = True
-    start_b = Button(300, 70)
-    quit_b = Button(300, 70)
+    start_b = Button_menu(300, 70)
+    quit_b = Button_menu(300, 70)
 
-    def show_menu2():
+    '''def show_menu2():
         menu_bg = pygame.image.load('virus.png')
         show2 = True
-        primeri_b = Button(300, 70)
-        creator_b = Button(300, 70)
+        primeri_b = Button_menu(300, 70)
+        creator_b = Button_menu(300, 70)
         while show2:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -358,7 +372,7 @@ def show_menu():
             primeri_b.draw(400, 200, 'New game', start_game, 50)
             creator_b.draw(300, 300, 'Continue game', None, 50)
 
-            pygame.display.update()
+            pygame.display.update()'''
 
     while show:
         for event in pygame.event.get():
@@ -367,7 +381,7 @@ def show_menu():
                 quit()
 
         screen.blit(menu_bg, (0, 0))
-        start_b.draw(300, 200, 'Start game', show_menu2, 50)
+        start_b.draw(300, 200, 'Start game', start_game, 50)
         quit_b.draw(400, 300, 'Quit game', quit, 50)
 
         pygame.display.update()
