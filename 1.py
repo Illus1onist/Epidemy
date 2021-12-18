@@ -66,6 +66,9 @@ heightramki=350 #высота рамки
 #координаты рамки
 coordxramki=1125
 coordyramki=25
+#ширина и высота кнопки
+buttonwidth = 50
+buttonheight = 50
 
 class plane:
     '''
