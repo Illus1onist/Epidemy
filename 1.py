@@ -5,7 +5,8 @@ import random
 
 FPS = 30
 
-cost = 100  # стоймость прокачки
+cost = 100  # стоимость прокачки обычных эволюций
+mutation_cost = 2000 # стоимость мутации
 
 # параметры вируса
 mutation = False
@@ -31,6 +32,10 @@ GAME_COLORS = [RED, DARKBLUE, YELLOW, GREEN, MAGENTA, CYAN, ORANGE]
 WIDTH = 1500
 HEIGHT = 750
 
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+samolet_infected = pygame.image.load('samolet.png').convert_alpha()
+samolet_common = pygame.image.load('samolet1.png').convert_alpha()
+
 
 
 TK=1.2
@@ -40,9 +45,9 @@ startproc=0.03
 Rusual=5
 class country:
     '''
-    Класс стран.
-    name - название страны.
-    Cities - список городов этой страны.
+    Класс стран
+    name - название страны
+    Cities - список городов этой страны
     '''
     def __init__(self,screen:pygame.Surface, x, y,xo,yo,color,Name):
         self.screen = screen
@@ -56,30 +61,67 @@ class country:
     def draw(self):
         pygame.draw.rect(self.screen,self.color,(self.x,self.y,self.xo-self.x,self.yo-self.y))
 
-widthramki=350
-heightramki=350
+widthramki=350 #ширина рамки
+heightramki=350 #высота рамки
+#координаты рамки
 coordxramki=1125
 coordyramki=25
 
-buttonwidth=50
-buttonheight=50
+class plane:
+    '''
+    Класс самолётов
+    x, y - координаты самолёта
+    end_x, end_y - координаты места прибытия
+    end_country, end_city - страна и город прибытия
+    velocity - скорость передвижения самолета
+    velocity_x, velocity_y - проекции скорости движения на координатные оси
+    infected - параметр, определяющий наличие заражённого юнита на борту
+    image - сам самолет, отображаемый на экране (красный, если indected = True, синий, если infected = False)
+    '''
+    def __init__(self, screen: pygame.Surface, x, y, end_x, end_y, velocity, infected, end_country, end_city):
+        global samolet_infected, samolet_common, Countries
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.end_x = end_x
+        self.end_y = end_y
+        self.end_country = end_country
+        self.end_city = end_city
+        self.velocity = velocity
+        r = math.sqrt((self.end_x - x)**2 + (self.end_y - y)**2)
+        self.velocity_x = velocity * ((end_x - x) / r)
+        self.velocity_y = velocity * ((end_y - y) / r)
+        rotate = math.degrees(math.atan2(y - end_y, end_x - x))
+        self.infected = infected
+        if self.infected:
+            self.image = pygame.transform.rotate(samolet_infected, rotate)
+        else:
+            self.image = pygame.transform.rotate(samolet_common, rotate)
+    def move(self):
+        '''
+        Функция, описывающая движение самолёта
+        '''
+        self.x += self.velocity_x
+        self.y += self.velocity_y
+        
 class city:
     '''
-    Класс, описывающий города.
-    x, y - координаты верхнего левого угла иконки.
-    xo, yo - координаты левого нижнего угла иконки.
-    N - число людей, населяющих этот город.
-    number_of_infected и number_of_deceased - количество зараженных и количество умерших соответственно.
-    Repid - радиус, в котором может заразить больной юнит здорового.
-    Dpropability - вероятность умереть в каждый день.
-    propability - вероятность заразиться рядом с больным юнитом.
-    active - скорость юнитов.
-    name - название города.
-    showstatus - показатель, который определяет отображение города. Показывается тот город, который имеет показатель = 1, остальные получают показатель = 1.
-    buttonx, buttony -  положение кнопки города.
-    timer - время выздоровления юнита в городе.
+    Класс, описывающий города
+    x, y - координаты верхнего левого угла иконки
+    xo, yo - координаты левого нижнего угла иконки
+    N - число людей, населяющих этот город
+    number_of_infected и number_of_deceased - количество зараженных и количество умерших соответственно
+    Repid - радиус, в котором может заразить больной юнит здорового
+    Dpropability - вероятность умереть в каждый день
+    propability - вероятность заразиться рядом с больным юнитом
+    active - скорость юнитов
+    name - название города
+    showstatus - показатель, который определяет отображение города. Показывается тот город, который имеет показатель = 1, остальные получают показатель = 1
+    buttonx, buttony -  положение кнопки города
+    timer - время выздоровления юнита в городе
+    tourist_probability - величина туризма в городе (увеличивает шанс полета самолеьа в этот город)
     '''
-    def __init__(self, screen: pygame.Surface, x, y,xo,yo,N,Repid,Dpropability,propability,active,Name,showstatus,buttonx,buttony, number_of_infected, number_of_deceased, timer):
+    def __init__(self, screen: pygame.Surface, x, y,xo,yo,N,Repid,Dpropability,propability,active,Name,showstatus,buttonx,buttony, number_of_infected, number_of_deceased, timer, tourist_probability):
         self.screen = screen
         self.x = x
         self.y = y
@@ -98,6 +140,7 @@ class city:
         self.Buttonx = buttonx
         self.Buttony = buttony
         self.timer = timer
+        self.tourist_probability = tourist_probability
     def draw(self):
         '''
         Функция отрисовки города (внутри рамки)
@@ -108,9 +151,9 @@ class city:
 
 class man:
     '''
-    Класс, опсиывающий юнита.
-    x, y - координаты юнита.
-    r - радиус юнита.
+    Класс, опсиывающий юнита
+    x, y - координаты юнита
+    r - радиус юнита
     live, color - параметр состаяния юнита и связанный с ним цвет соответственно:
         2 - нейтральный юнит (с ним может произойти любое действие), голубой
         1 - зараженный юнит, красный
@@ -143,7 +186,7 @@ class man:
 
     def move(self):
         '''
-        Функция, описывающая движение юнитов.
+        Функция, описывающая движение юнитов
         '''
         self.van=self.van+random.uniform(-math.pi*0.1,math.pi*0.1)
         self.x = self.x + math.cos(self.van) * self.v * self.city.active
@@ -162,12 +205,19 @@ class man:
             self.van=(random.uniform(-math.pi,0))
     def draw(self):
         '''
-        Функция отрисовки юнита.
+        Функция отрисовки юнита
         '''
         pygame.draw.circle(self.screen,self.color,(self.x+(coordxramki-self.city.x),self.y+(coordyramki-self.city.y)),self.r)
-
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+samolet_infected = pygame.image.load('samolet.png').convert_alpha()
+samolet_common = pygame.image.load('samolet1.png').convert_alpha()
+ramka = pygame.image.load('Ramka.png').convert_alpha()
+mapflag = pygame.image.load('metka.png').convert_alpha()
 
 def start_game():
+    '''
+    Функция самой игры
+    '''
     global letal, zaraz, imun, mutation, score
     finished = False
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -175,28 +225,29 @@ def start_game():
     all_infected = 0
     all_deceased = 0
     Countries=[]
+    Planes = []
     Countries.append(country(screen,1100,350,1425,700,LIGHTRED,'China'))
     Countries.append(country(screen,900,25,1450,300, ORANGE,'Russia'))
     Countries.append(country(screen,590,50,740,350,BLUE,'Netherlands'))
     Countries.append(country(screen,80,170,450,430,DARKBLUE,'USA'))
     Countries.append(country(screen,150,520,500,730,GREEN,'Brasilia'))
-    Countries[0].Cities.append(city(screen, -2000, 0, -2000+widthramki, heightramki, 150, 21, 0.01, 0.17, 0.3,'Oohan',1,785,159, 0, 0, 14))
-    Countries[0].Cities.append(city(screen, -1600, 0, -1600+widthramki, heightramki, 150, 21, 0.01, 0.17, 0.2,'Beijin',0,843,134, 0, 0, 14))
-    Countries[0].Cities.append(city(screen, -1200, 0, -1200+widthramki, heightramki, 150, 21, 0.01, 0.17, 0.2,'Hong-Kong',0,898,185, 0, 0, 14))
+    Countries[0].Cities.append(city(screen, -2000, 0, -2000+widthramki, heightramki, 150, 21, 0.01, 0.17, 0.3,'Oohan',1,785,159, 0, 0, 14, 0.005))
+    Countries[0].Cities.append(city(screen, -1600, 0, -1600+widthramki, heightramki, 150, 21, 0.01, 0.17, 0.2,'Beijin',0,843,134, 0, 0, 14, 0.005))
+    Countries[0].Cities.append(city(screen, -1200, 0, -1200+widthramki, heightramki, 150, 21, 0.01, 0.17, 0.2,'Hong-Kong',0,898,185, 0, 0, 14, 0.005))
 
-    Countries[1].Cities.append(city(screen, -2000, 400, -2000+widthramki, 400+heightramki, 150, 21, 0.015, 0.17, 0.2,'Moscow',0,621,79, 0, 0, 14))
-    Countries[1].Cities.append(city(screen, -1600, 400, -1600+widthramki, 400+heightramki, 150, 21, 0.015, 0.17, 0.2,'Chelyabinsk',0,748,72, 0, 0, 14))
-    Countries[1].Cities.append(city(screen, -1200, 400, -1200+widthramki, 400+heightramki, 150, 21, 0.015, 0.17, 0.2,'Vladivstok',0,933,98, 0, 0, 14))
+    Countries[1].Cities.append(city(screen, -2000, 400, -2000+widthramki, 400+heightramki, 150, 21, 0.015, 0.17, 0.2,'Moscow',0,621,79, 0, 0, 14, 0.005))
+    Countries[1].Cities.append(city(screen, -1600, 400, -1600+widthramki, 400+heightramki, 150, 21, 0.015, 0.17, 0.2,'Chelyabinsk',0,748,72, 0, 0, 14, 0.005))
+    Countries[1].Cities.append(city(screen, -1200, 400, -1200+widthramki, 400+heightramki, 150, 21, 0.015, 0.17, 0.2,'Vladivstok',0,933,98, 0, 0, 14, 0.005))
 
-    Countries[2].Cities.append(city(screen, -2000, 800, -2000+widthramki, 800+heightramki, 150, 21, 0.015, 0.17, 0.2,'Rotterdam',0,528,90, 0, 0, 14))
-    Countries[2].Cities.append(city(screen, -1600, 800, -1600+widthramki, 800+heightramki, 150, 21, 0.015, 0.17, 0.2,'Amsterdam',0,484,123, 0, 0, 14))
+    Countries[2].Cities.append(city(screen, -2000, 800, -2000+widthramki, 800+heightramki, 150, 21, 0.015, 0.17, 0.2,'Rotterdam',0,528,90, 0, 0, 14, 0.005))
+    Countries[2].Cities.append(city(screen, -1600, 800, -1600+widthramki, 800+heightramki, 150, 21, 0.015, 0.17, 0.2,'Amsterdam',0,484,123, 0, 0, 14, 0.005))
 
-    Countries[3].Cities.append(city(screen, -2000, 1200, -2000+widthramki, 1200+heightramki, 150, 21, 0.015, 0.17, 0.2,'Washington',0,224,132, 0, 0, 14))
-    Countries[3].Cities.append(city(screen, -1600, 1200, -1600+widthramki, 1200+heightramki, 150, 21, 0.015, 0.17, 0.2,'New York',0,167,159, 0, 0, 14))
-    Countries[3].Cities.append(city(screen, -1200, 1200, -1200+widthramki, 1200+heightramki, 150, 21, 0.015, 0.17, 0.2,'Los Anjeles',0,81,149, 0, 0, 14))
+    Countries[3].Cities.append(city(screen, -2000, 1200, -2000+widthramki, 1200+heightramki, 150, 21, 0.015, 0.17, 0.2,'Washington',0,224,132, 0, 0, 14, 0.005))
+    Countries[3].Cities.append(city(screen, -1600, 1200, -1600+widthramki, 1200+heightramki, 150, 21, 0.015, 0.17, 0.2,'New York',0,167,159, 0, 0, 14, 0.005))
+    Countries[3].Cities.append(city(screen, -1200, 1200, -1200+widthramki, 1200+heightramki, 150, 21, 0.015, 0.17, 0.2,'Los Anjeles',0,81,149, 0, 0, 14, 0.005))
 
-    Countries[4].Cities.append(city(screen, -2000, 1600, -2000+widthramki, 1600+heightramki, 150, 21, 0.015, 0.17, 0.2,'Brasilia',0,344,311, 0, 0, 14))
-    Countries[4].Cities.append(city(screen, -1600, 1600, -1600+widthramki, 1600+heightramki, 150, 21, 0.015, 0.17, 0.2,'Rio de Janeiro',0,289,346, 0, 0, 14))
+    Countries[4].Cities.append(city(screen, -2000, 1600, -2000+widthramki, 1600+heightramki, 150, 21, 0.015, 0.17, 0.2,'Brasilia',0,344,311, 0, 0, 14, 0.005))
+    Countries[4].Cities.append(city(screen, -1600, 1600, -1600+widthramki, 1600+heightramki, 150, 21, 0.015, 0.17, 0.2,'Rio de Janeiro',0,289,346, 0, 0, 14, 0.005))
 
     t=0 # Таймер (работает в течении всей игры)
 
@@ -214,7 +265,7 @@ def start_game():
     letal_b = Button_game(170, 80, 1) #влияет на вероятность смерти
     zaraz_b = Button_game(170, 80, 2) #влияет на вероятность заражения
     imun_b = Button_game(170, 80, 3) #влияет на время выздоровления
-    mutation_b = Button_game(170, 80, 4)
+    mutation_b = Button_game(170, 80, 4) #мутация
 
     #начало цикла основной игры
     while not finished:
@@ -227,14 +278,17 @@ def start_game():
         letal_b.draw(50, 650, 'Lethality+1', str(cost), None, 30)
         zaraz_b.draw(400, 650, 'Infection+1', str(cost),  None, 30)   # тоже кнопки
         imun_b.draw(750, 650, 'Immune+1', str(cost),  None, 30)
-        mutation_b.draw(1100, 650, 'Mutation', str(cost),  None, 30)
-        #Подсчёт умерших и заражённых. Отрисовка юнитов, наименования страны, наименования города, количества зараженных и умерших.
+        mutation_b.draw(1100, 650, 'Mutation', str(mutation_cost),  None, 30)
         all_infected = 0
         all_deceased = 0
+        #Подсчёт умерших и заражённых
         for k in range(len(Countries)):
             for j in range (len(Countries[k].Cities)):
                 all_infected += Countries[k].Cities[j].number_of_infected
                 all_deceased += Countries[k].Cities[j].number_of_deceased
+        #Отрисовка юнитов, наименования страны, наименования города, количества зараженных и умерших (в городе и вообще).
+        for k in range(len(Countries)):
+            for j in range (len(Countries[k].Cities)):
                 if zaraz:
                     Countries[k].Cities[j].propability += 0.02
                 if letal:
@@ -270,10 +324,9 @@ def start_game():
                         Countries[k].Cities[j].people[i].move()
                     if Countries[k].Cities[j].showstatus == 1:
                         Countries[k].Cities[j].people[i].draw()
-        #drawing ramka above and metki
-        ramka = pygame.image.load('Ramka.png').convert_alpha()
+
+        #Отрисовка рамки
         screen.blit(ramka, (1110, 10))
-        mapflag = pygame.image.load('metka.png').convert_alpha()
 
 
         #Передача вируса другим юнитам
@@ -287,6 +340,34 @@ def start_game():
                                 Countries[i].Cities[j].people[k].live = 1
                                 Countries[i].Cities[j].people[k].timer = Countries[i].Cities[j].timer
                                 score += 10
+
+        #Вылет самолетов и определние наличия на борту зараженного юнита
+        for i in range(len(Countries)):
+            for j in range(len(Countries[i].Cities)):
+                for k in range(len(Countries)):
+                    for l in range(len(Countries[k].Cities)):
+                        if random.uniform(0, 1) < Countries[k].Cities[l].tourist_probability and Countries[i].Cities[j] != Countries[k].Cities[l] and t%(int(FPS/TK))==0:
+                            if random.uniform(0, 1) < Countries[i].Cities[j].number_of_infected * 0.005:
+                                Planes.append(plane(screen, Countries[i].Cities[j].Buttonx, Countries[i].Cities[j].Buttony, Countries[k].Cities[l].Buttonx, Countries[k].Cities[l].Buttony, 5, True, k, l))
+                            else:
+                                Planes.append(plane(screen, Countries[i].Cities[j].Buttonx, Countries[i].Cities[j].Buttony, Countries[k].Cities[l].Buttonx, Countries[k].Cities[l].Buttony, 5, False, k, l))
+
+        #Отрисока Самолетов
+        for i in range(len(Planes)):
+            Planes[i].move()
+            screen.blit(Planes[i].image, (Planes[i].x, Planes[i].y))
+
+        #Приземление самолетов и высадка зараженных юнитов, если таковые имеются
+        for i in Planes:
+            if (i.x - i.end_x)**2 + (i.y - i.end_y)**2 <= 50:
+                if i.infected:
+                    k = i.end_country
+                    l = i.end_city
+                    j = random.randint(0, Countries[k].Cities[l].N)
+                    Countries[k].Cities[l].people[j].live = 1
+                    Countries[k].Cities[l].people[j].timer = Countries[k].Cities[l].timer
+                    score += 10
+                Planes.remove(i)
 
         #Уменьшение значение таймера болезни у юнитов
         for i in range(len(Countries)):
@@ -332,6 +413,7 @@ def start_game():
                         Countries[i].Cities[j].people[k].color = BLACK
                     if Countries[i].Cities[j].people[k].live==2:
                         Countries[i].Cities[j].people[k].color = BLUE
+        #Обновление эволюции
         mutation = False
         imun = False
         letal = False
@@ -339,7 +421,7 @@ def start_game():
 
         pygame.display.update()
 
-        #operator for buttons
+        #Оператор для кнопок
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 finished = True
@@ -372,6 +454,10 @@ def print_text (message, x, y, font_color=(0, 0, 0), font_type='etna.otf', font_
 
 
 class Button_menu:
+    '''
+    Класс кнопок главного меню
+    width и height - ширина и высота соответственно
+    '''
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -379,6 +465,9 @@ class Button_menu:
         self.active_color = (23, 204, 58)
 
     def draw(self, x, y, message, action=None, font_size=50):
+        '''
+        Функция отрисоки кнопки и выполнения присвоенной ей команды
+        '''
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
@@ -397,6 +486,13 @@ class Button_menu:
         print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)
 
 class Button_game:
+    '''
+    Класс игровых кнопок
+    width и height - ширина и высота соответственно
+    type - тип кнопки (в зависимости от этого параметра кнопка выполняет ту или иную функцию)
+    inactive_color - цвет ненажатой кнопки
+    active_color - цвет нажатой кнопки
+    '''
     def __init__(self, width, height, type):
         self.width = width
         self.height = height
@@ -405,12 +501,15 @@ class Button_game:
         self.active_color = (255, 52, 179)
 
     def draw(self, x, y, message1, message2, action=None, font_size=50):
-        global cost, letal, zaraz, imun, mutation, score
+        '''
+        Функция отрисоки кнопки и выполнения присвоенной ей команды
+        '''
+        global cost, letal, zaraz, imun, mutation, score, mutation_cost
         type = self.type
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        if x < mouse[0] < x + self.width and y < mouse[1] < y + self.height and cost<=score:
+        if x < mouse[0] < x + self.width and y < mouse[1] < y + self.height and cost<=score and type != 4:
                 pygame.draw.rect(screen, self.active_color, (x, y, self.width, self.height))
 
                 if click[0] == 1:
@@ -420,10 +519,20 @@ class Button_game:
                         zaraz = True  # тоже
                     if type == 3:
                         imun = True  # тоже
-                    if type == 4:
-                        mutation = True
                     score -= cost
                     cost += 100
+                    button_sound = pygame.mixer.Sound('button2.wav')
+                    pygame.mixer.Sound.play(button_sound)
+                    pygame.time.delay(300)
+                    if action is not None:
+                        action()
+        if x < mouse[0] < x + self.width and y < mouse[1] < y + self.height and mutation_cost<=score and type ==4:
+                pygame.draw.rect(screen, self.active_color, (x, y, self.width, self.height))
+                
+                if click[0] == 1:
+                    mutation = True
+                    score -= mutation_cost
+                    mutation_cost += 1000
                     button_sound = pygame.mixer.Sound('button2.wav')
                     pygame.mixer.Sound.play(button_sound)
                     pygame.time.delay(300)
@@ -437,6 +546,9 @@ class Button_game:
 
 
 def show_menu():
+    '''
+    Функция отображения главного меню и последующего перехода к игре или выхода
+    '''
     menu_bg = pygame.image.load('virus.png')
     show = True
     start_b = Button_menu(300, 70)
