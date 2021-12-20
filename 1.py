@@ -43,6 +43,7 @@ startproc = 0.03
 
 Rusual = 5
 
+
 class Scale:
     """
     Класс шкал уровней эволюций вируса
@@ -52,6 +53,7 @@ class Scale:
     color - цвет заполнения
     lvl - величина заполнения
     """
+
     def __init__(self, screen1: pygame.Surface, x, y, width, height, color, lvl):
         self.screen = screen1
         self.x = x
@@ -61,20 +63,19 @@ class Scale:
         self.color = color
         self.surface = pygame.Surface((self.width, self.height))
         self.lvl = lvl
+
     def draw(self):
         """
         Функция отрисовки шкалы
         """
-        pygame.draw.rect(self.screen, self.color,
-                           (self.x + 2, self.y + self.height - (self.height / 10) * self.lvl + 2,
-                            self.width - 5, (self.height / 10)*self.lvl - 4))
-        for i in range(0,10):
+        pygame.draw.rect(self.screen, self.color, (self.x + 2, self.y + self.height - (self.height / 10) * self.lvl + 2,
+                                                   self.width - 5, (self.height / 10) * self.lvl - 4))
+        for i in range(0, 10):
             pygame.draw.rect(self.screen, BLACK,
-                           (self.x, self.y + i * (self.height / 10),
-                            self.width, self.height / 10), 4)
-        
-        
-        
+                             (self.x, self.y + i * (self.height / 10),
+                              self.width, self.height / 10), 4)
+
+
 class Country:
     """
     Класс стран
@@ -245,8 +246,8 @@ class Man:
         Функция отрисовки юнита
         """
         pygame.draw.circle(self.screen, self.color,
-                           (self.x + (coordxramki - self.city.x), self.y + (coordyramki - self.city.y))
-                           , self.r)
+                           (self.x + (coordxramki - self.city.x), self.y + (coordyramki - self.city.y)),
+                           self.r)
 
 
 samolet_infected = pygame.image.load('samolet.png').convert_alpha()
@@ -330,17 +331,17 @@ def start_game():
     mutation_b = ButtonGame(170, 80, 4)  # мутация
 
     # Кнопки взаимодействия с лабораторией
-    lab_enter = ButtonGame(170, 80, 5)# Вход в лабораторию
-    lab_back = ButtonGame(170, 80, 6)# Выход из лаборатории
+    lab_enter = ButtonGame(170, 80, 5)  # Вход в лабораторию
+    lab_back = ButtonGame(170, 80, 6)  # Выход из лаборатории
 
     # Размеры шрифта
     f = pygame.font.Font(None, 60)
     g = pygame.font.Font(None, 40)
 
-    #Шкалы эволюций вируса
-    scale_imun = Scale(screen, 790, 100, 70, 500, GREEN, 0) #Шкала иммунитета
-    scale_letal = Scale(screen, 90, 100, 70, 500, MAGENTA, 0) #Шкала смертоносности
-    scale_zaraz = Scale(screen, 440, 100, 70, 500, CYAN, 0) #Шкала заразности
+    # Шкалы эволюций вируса
+    scale_imun = Scale(screen, 790, 100, 70, 500, GREEN, 0)  # Шкала иммунитета
+    scale_letal = Scale(screen, 90, 100, 70, 500, MAGENTA, 0)  # Шкала смертоносности
+    scale_zaraz = Scale(screen, 440, 100, 70, 500, CYAN, 0)  # Шкала заразности
 
     # начало цикла основной игры
     while not finished:
@@ -354,7 +355,7 @@ def start_game():
                 all_infected += countries[k].Cities[j].number_of_infected
                 all_deceased += countries[k].Cities[j].number_of_deceased
 
-        #Отриовка экрана лаборатории (эволюции вируса).
+        # Отриcовка экрана лаборатории (эволюции вируса).
         if lab:
             screen.blit(laboratory, (0, 0))
             scale_imun.lvl = imun_b.lvl
@@ -369,9 +370,9 @@ def start_game():
             mutation_b.draw(1100, 400, 'Mutation', str(mutation_cost), None, 30)
             lab_back.draw(1100, 650, 'Exit the', 'Lab', None, 30)
         else:
-        # Отрисовка юнитов, наименования страны, наименования города,
-        # самолетов, рамки, количества зараженных и умерших (в городе),
-        # карты мира, кнопки входа в лабораторию.
+            """Отрисовка юнитов, наименования страны, наименования города,
+            самолетов, рамки, количества зараженных и умерших (в городе),
+            карты мира, кнопки входа в лабораторию."""
             screen.blit(map, (0, 0))
             lab_enter.draw(50, 650, 'Enter the', 'Lab', None, 30)
             for k in range(len(countries)):
@@ -392,7 +393,6 @@ def start_game():
                                         (180, 0, 0))
                         screen.blit(text, (1100, 505))
 
-
                     for i in range(len(countries[k].Cities[j].people)):
                         if countries[k].Cities[j].people[i].ghoust == 0 and countries[k].Cities[j].people[i].live != -1:
                             countries[k].Cities[j].people[i].move()
@@ -404,7 +404,7 @@ def start_game():
             for i in range(len(planes)):
                 screen.blit(planes[i].image, (planes[i].x, planes[i].y))
 
-        #Отрисовка общего количества умерших и заболевших, а так же общего счета(левый верхний угол).
+        # Отрисовка общего количества умерших и заболевших, а так же общего счета(левый верхний угол).
         text = g.render('total infected: ' + str(all_infected), True, (180, 0, 0))
         screen.blit(text, (0, 0))
 
@@ -431,7 +431,7 @@ def start_game():
                                     and countries[i].Cities[j].people[d].live == 1 \
                                     and (countries[i].Cities[j].people[d].x - countries[i].Cities[j].people[k].x) ** 2 \
                                     + (countries[i].Cities[j].people[d].y - countries[i].Cities[j].people[k].y) ** 2 \
-                                    <= countries[i].Cities[j].Repid ** 2\
+                                    <= countries[i].Cities[j].Repid ** 2 \
                                     and t % (int(FPS / TK / frequencyofvirus)) == 0 \
                                     and random.uniform(0, 1) < countries[i].Cities[j].propability:
                                 countries[i].Cities[j].people[k].live = 1
@@ -446,7 +446,7 @@ def start_game():
                         if random.uniform(0, 1) < countries[k].Cities[d].tourist_probability \
                                 and countries[i].Cities[j] != countries[k].Cities[d] \
                                 and t % (int(FPS / TK)) == 0:
-                            if random.uniform(0, 1) < countries[i].Cities[j].number_of_infected * 0.005:
+                            if random.uniform(0, 1) < countries[i].Cities[j].number_of_infected * 0.025:
                                 planes.append(Plane(screen, countries[i].Cities[j].Buttonx,
                                                     countries[i].Cities[j].Buttony, countries[k].Cities[d].Buttonx,
                                                     countries[k].Cities[d].Buttony, 5, True, k, d))
@@ -455,7 +455,7 @@ def start_game():
                                                     countries[i].Cities[j].Buttony, countries[k].Cities[d].Buttonx,
                                                     countries[k].Cities[d].Buttony, 5, False, k, d))
 
-        #Движение самолетов        
+        # Движение самолетов
         for i in range(len(planes)):
             planes[i].move()
 
@@ -465,7 +465,7 @@ def start_game():
                 if i.infected:
                     k = i.end_country
                     d = i.end_city
-                    j = random.randint(0, countries[k].Cities[d].N)
+                    j = random.randint(0, countries[k].Cities[d].N - 1)
                     countries[k].Cities[d].people[j].live = 1
                     countries[k].Cities[d].people[j].timer = countries[k].Cities[d].timer
                     score += 10
@@ -478,7 +478,7 @@ def start_game():
                     if countries[i].Cities[j].people[k].live == 1 and t % (int(FPS / TK)) == 0:
                         countries[i].Cities[j].people[k].timer -= 1
 
-        # Определение состояния юнита после болезни(выздоравливает или умерает)
+        # Определение состояния юнита после болезни(выздоравливает или умирает)
         for i in range(len(countries)):
             for j in range(len(countries[i].Cities)):
                 for k in range(len(countries[i].Cities[j].people)):
@@ -633,8 +633,8 @@ class ButtonGame:
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        if x < mouse[0] < x + self.width and y < mouse[1] < y + self.height\
-           and cost <= score and type < 4 and self.lvl < 10:
+        if x < mouse[0] < x + self.width and y < mouse[1] < y + self.height \
+                and cost <= score and type < 4 and self.lvl < 10:
             pygame.draw.rect(screen, self.active_color, (x, y, self.width, self.height))
 
             if click[0] == 1:
