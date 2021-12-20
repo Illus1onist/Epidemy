@@ -376,12 +376,6 @@ def start_game():
             lab_enter.draw(50, 650, 'Enter the', 'Lab', None, 30)
             for k in range(len(countries)):
                 for j in range(len(countries[k].Cities)):
-                    if zaraz:
-                        countries[k].Cities[j].propability += 0.02
-                    if letal:
-                        countries[k].Cities[j].Dpropability += 0.02
-                    if imun:
-                        countries[k].Cities[j].timer += 1
                     screen.blit(mapflag, (countries[k].Cities[j].Buttonx, countries[k].Cities[j].Buttony))
                     if countries[k].Cities[j].showstatus == 1:
                         text = f.render(str(countries[k].Cities[j].name), True, (180, 0, 0))
@@ -420,9 +414,16 @@ def start_game():
         text = g.render('score: ' + str(score), True, (180, 0, 0))
         screen.blit(text, (0, 80))
 
-        # Передача вируса другим юнитам
+        # Передача вируса другим юнитам, увеличение характеристик вируса
+        # при нажатой кнопки эволюции
         for i in range(len(countries)):
             for j in range(len(countries[i].Cities)):
+                if zaraz:
+                    countries[i].Cities[j].propability += 0.04
+                if letal:
+                    countries[i].Cities[j].Dpropability += 0.04
+                if imun:
+                    countries[i].Cities[j].timer += 2
                 for k in range(len(countries[i].Cities[j].people)):
                     if countries[i].Cities[j].people[k].live == 2:
                         for d in range(len(countries[i].Cities[j].people)):
