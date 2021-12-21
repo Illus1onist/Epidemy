@@ -696,23 +696,6 @@ def show_menu():
     start_b = ButtonMenu(300, 70)
     quit_b = ButtonMenu(300, 70)
 
-    '''def show_menu2():
-        menu_bg = pygame.image.load('virus.png')
-        show2 = True
-        primeri_b = Button_menu(300, 70)
-        creator_b = Button_menu(300, 70)
-        while show2:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-
-            screen.blit(menu_bg, (0, 0))
-            primeri_b.draw(400, 200, 'New game', start_game, 50)
-            creator_b.draw(300, 300, 'Continue game', None, 50)
-
-            pygame.display.update()'''
-
     while show:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
